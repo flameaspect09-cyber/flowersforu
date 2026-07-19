@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Moonlit Bloom — Purple Fantasy Night</title>
+<style>
+/* ============================================================
+   MOONLIT BLOOM — a cinematic purple-fantasy animated wallpaper
+   Single-file HTML/CSS/SVG/JS. No external assets.
+   ============================================================ */
+
+:root{
+  --deep-purple:  #1c0f3a;
+  --purple:       #3a1f6b;
+  --violet:       #7c4fd6;
+  --lavender:     #c9b6ff;
+  --lav-light:    #e6d9ff;
+  --soft-pink:    #f2b8e4;
+  --moon-white:   #f8f4ff;
+  --leaf-1:       #3fae6e;
+  --leaf-2:       #1f7a49;
+  --leaf-3:       #2c9d5c;
+}
+
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+html,body{
+  height:100%;
+  overflow:hidden;
+  background:#050211;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+
+body{ position:relative; width:100vw; height:100vh; }
+
+/* ---------- Layer stack ---------- */
+.layer{ position:absolute; inset:0; overflow:hidden; }
+
+/* ================= SKY ================= */
+#sky{
+  z-index:1;
+  background:
+    radial-gradient(ellipse at 72% 18%, rgba(216,190,255,0.18) 0%, rgba(216,190,255,0) 45%),
+    radial-gradient(ellipse at 30% 70%, rgba(124,79,214,0.25) 0%, rgba(124,79,214,0) 55%),
+    linear-gradient(180deg, var(--deep-purple) 0%, #150a2e 30%, #0c0620 62%, #050211 100%);
+}
+
+/* nebula wisps */
+.nebula{
+  position:absolute;
+  filter:blur(38px);
+  mix-blend-mode:screen;
+  opacity:0.55;
+  animation:driftNebula 40s ease-in-out infinite alternate;
+}
+.nebula.n1{ width:70vw; height:45vh; top:-8%; left:-10%;
+  background:radial-gradient(ellipse, rgba(158,110,235,0.55), transparent 65%); }
+.nebula.n2{ width:55vw; height:40vh; top:8%; right:-15%;
+  background:radial-gradient(ellipse, rgba(240,180,240,0.28), transparent 65%);
+  animation-duration:52s; animation-direction:alternate-reverse; }
+.nebula.n3{ width:60vw; height:35vh; top:35%; left:20%;
+  background:radial-gradient(ellipse, rgba(90,60,160,0.35), transparent 70%);
+  animation-duration:65s; }
+
+@keyframes driftNebula{
+  0%{ transform:translate(0,0) scale(1); }
+  100%{ transform:translate(3%,-2%) scale(1.08); }
+}
+
+/* moon */
+.moon-wrap{ position:absolute; top:9%; right:11%; width:min(16vw,120px); height:min(16vw,120px); }
+.moon-wrap svg{ width:100%; height:100%; overflow:visible; }
+.moon-halo{ animation:moonPulse 6s ease-in-out infinite; transform-origin:center; }
+@keyframes moonPulse{
+  0%,100%{ opacity:0.55; }
+  50%{ opacity:0.85; }
+}
+
+/* stars */
+#stars{ z-index:2; }
+.star{
+  position:absolute;
+  border-radius:50%;
+  background:#fff;
+  will-change:opacity,transform;
+  animation-name:twinkle;
+  animation-timing-function:ease-in-out;
+  animation-iteration-count:infinite;
+}
+@keyframes twinkle{
+  0%,100%{ opacity:var(--min-op,0.15); transform:scale(0.6); }
+  50%{ opacity:var(--max-op,1); transform:scale(1); }
+}
+
+/* shooting stars */
+#shooting-layer{ z-index:3; pointer-events:none; }
+.shoot{
+  position:absolute;
+  width:2px; height:2px;
+  border-radius:50%;
+  background:var(--moon-white);
+  box-shadow:0 0 6px 1px #fff, 0 0 0 0 transparent;
+}
+.shoot::after{
+  content:"";
+  position:absolute;
+  top:50%; right:0;
+  width:120px; height:1px;
+  transform:translateY(-50%);
+  background:linear-gradient(90deg, rgba(255,255,255,0.9), transparent);
+}
+
+/* fog / mist parallax */
+.fog{ position:absolute; left:-10%; width:120%; height:34vh; bottom:0; pointer-events:none; z-index:5; }
+.fog.f1{
+  background:radial-gradient(ellipse at 50% 100%, rgba(148,101,214,0.30), transparent 70%);
+  filter:blur(22px);
+  animation:fogDrift 22s ease-in-out infinite alternate;
+}
+.fog.f2{
+  background:radial-gradient(ellipse at 50% 100%, rgba(197,167,255,0.18), transparent 75%);
+  filter:blur(30px);
+  height:26vh;
+  animation:fogDrift 30s ease-in-out infinite alternate-reverse;
+}
+@keyframes fogDrift{
+  0%{ transform:translateX(-3%); }
+  100%{ transform:translateX(3%); }
+}
+
+/* ================= GROUND ================= */
+#ground{
+  z-index:6;
+  bottom:0; top:auto; height:30%;
+  background:linear-gradient(180deg, rgba(15,7,32,0) 0%, #0e0620 55%, #060310 100%);
+}
+
+/* grass */
+#grass-svg{
+  position:absolute; bottom:0; left:0; width:100%; height:16vh; z-index:7;
+  overflow:visible;
+}
+.blade{ transform-box:fill-box; transform-origin:bottom center; animation-name:bladeSway; animation-timing-function:ease-in-out; animation-iteration-count:infinite; }
+@keyframes bladeSway{
+  0%,100%{ transform:rotate(var(--rot-a,-3deg)); }
+  50%{ transform:rotate(var(--rot-b,3deg)); }
+}
+
+/* ================= SCENE / FLOWERS ================= */
+#scene{
+  position:absolute;
+  left:50%; bottom:0;
+  transform:translateX(-50%);
+  width:min(1100px,100%);
+  height:62vh;
+  z-index:8;
+}
+.flower-svg{ position:absolute; bottom:0; overflow:visible; }
+
+/* stem growth (uses SVG pathLength=1 normalized dash) */
+.stem-draw{
+  stroke-dasharray:1;
+  stroke-dashoffset:1;
+  animation:drawStem 1.1s cubic-bezier(0.45,0,0.2,1) forwards;
+}
+@keyframes drawStem{ to{ stroke-dashoffset:0; } }
+
+/* upper stem bends in the wind; base stays fixed */
+.stem-upper{ animation-name:stemSway; animation-timing-function:ease-in-out; animation-iteration-count:infinite; }
+@keyframes stemSway{
+  0%,100%{ transform:rotate(-2.4deg); }
+  50%{ transform:rotate(2.4deg); }
+}
+
+/* leaves: sprout then sway more than stem */
+.leaf{
+  transform-origin:0px 0px;
+  opacity:0;
+  animation:leafSprout 0.9s cubic-bezier(0.34,1.4,0.64,1) forwards, leafSway 3.4s ease-in-out infinite;
+  animation-play-state:paused, paused;
+}
+.leaf.grown{ animation-play-state:running, running; }
+@keyframes leafSprout{
+  0%{ opacity:0; transform:scale(0.15) rotate(-25deg); }
+  100%{ opacity:1; transform:scale(1) rotate(0deg); }
+}
+@keyframes leafSway{
+  0%,100%{ transform:rotate(-6deg); }
+  50%{ transform:rotate(6deg); }
+}
+
+/* bud */
+.bud{
+  transform-box:fill-box; transform-origin:center;
+  opacity:0;
+  animation:budAppear 0.7s ease-out forwards;
+  animation-play-state:paused;
+}
+.bud.go{ animation-play-state:running; }
+@keyframes budAppear{
+  0%{ opacity:0; transform:scale(0.05) rotate(-40deg); }
+  100%{ opacity:1; transform:scale(1) rotate(0deg); }
+}
+.bud.fadeaway{ animation:budFade 0.6s ease-in forwards; }
+@keyframes budFade{ to{ opacity:0; transform:scale(0.4); } }
+
+/* petals unfold one by one */
+.petal{
+  transform-origin:0px 0px;
+  opacity:0;
+  animation:petalUnfold 1s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  animation-play-state:paused;
+}
+.petal.go{ animation-play-state:running; }
+@keyframes petalUnfold{
+  0%{ opacity:0; transform:scale(0.05) rotate(-55deg); }
+  65%{ opacity:1; transform:scale(1.12) rotate(6deg); }
+  100%{ opacity:1; transform:scale(1) rotate(0deg); }
+}
+
+/* flower head barely moves with wind (subtle counter-sway) */
+.flower-head{ transform-box:fill-box; transform-origin:center; animation:headSway 5.4s ease-in-out infinite; }
+@keyframes headSway{
+  0%,100%{ transform:rotate(-0.8deg); }
+  50%{ transform:rotate(0.8deg); }
+}
+
+/* center detail */
+.center-detail{ opacity:0; animation:fadeIn 0.8s ease-out forwards; animation-play-state:paused; }
+.center-detail.go{ animation-play-state:running; }
+@keyframes fadeIn{ to{ opacity:1; } }
+
+/* glow breathing */
+.bloom-glow{
+  opacity:0;
+  animation:glowBreathe 4s ease-in-out infinite;
+  animation-play-state:paused;
+}
+.bloom-glow.go{ animation-play-state:running; }
+@keyframes glowBreathe{
+  0%{ opacity:0; }
+  12%{ opacity:0.65; }
+  50%{ opacity:0.4; }
+  85%{ opacity:0.65; }
+  100%{ opacity:0; }
+}
+
+/* ================= FIREFLIES ================= */
+#fireflies{ z-index:12; }
+.firefly{
+  position:absolute;
+  width:5px; height:5px;
+  border-radius:50%;
+  background:radial-gradient(circle, #fff 0%, var(--lav-light) 40%, transparent 75%);
+  box-shadow:0 0 8px 2px rgba(230,200,255,0.9);
+  animation-name:fireflyFly, fireflyGlow;
+  animation-timing-function:ease-in-out, ease-in-out;
+  animation-iteration-count:infinite, infinite;
+  opacity:0;
+}
+@keyframes fireflyFly{
+  0%{   transform:translate(0,0); }
+  25%{  transform:translate(var(--x1),var(--y1)); }
+  50%{  transform:translate(var(--x2),var(--y2)); }
+  75%{  transform:translate(var(--x3),var(--y3)); }
+  100%{ transform:translate(0,0); }
+}
+@keyframes fireflyGlow{
+  0%,100%{ opacity:0; }
+  15%{ opacity:0.9; }
+  50%{ opacity:0.35; }
+  85%{ opacity:0.9; }
+}
+
+/* ================= FALLING PETALS ================= */
+#falling-petals{ z-index:11; }
+.fpetal{
+  position:absolute;
+  top:-5vh;
+  border-radius:60% 5% 60% 5%;
+  animation-name:petalFall, petalSpin;
+  animation-timing-function:linear, linear;
+  animation-iteration-count:infinite, infinite;
+}
+@keyframes petalFall{
+  0%{ transform:translate(0,0); }
+  100%{ transform:translate(var(--drift), 112vh); }
+}
+@keyframes petalSpin{
+  0%{ rotate:0deg; }
+  100%{ rotate:360deg; }
+}
+
+/* ================= DUST / SPARKLES ================= */
+#dust{ z-index:9; }
+.mote{
+  position:absolute;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,255,255,0.9), rgba(200,170,255,0.1) 70%, transparent);
+  animation-name:moteFloat, moteTwinkle;
+  animation-timing-function:ease-in-out, ease-in-out;
+  animation-iteration-count:infinite, infinite;
+}
+@keyframes moteFloat{
+  0%{ transform:translate(0,0); }
+  50%{ transform:translate(var(--mx), var(--my)); }
+  100%{ transform:translate(0,0); }
+}
+@keyframes moteTwinkle{
+  0%,100%{ opacity:0.15; }
+  50%{ opacity:0.75; }
+}
+
+/* ================= CAMERA / GRADE ================= */
+#vignette{
+  z-index:20;
+  pointer-events:none;
+  background:radial-gradient(ellipse at 50% 45%, transparent 40%, rgba(4,1,12,0.55) 100%);
+}
+#grade{
+  z-index:21;
+  pointer-events:none;
+  mix-blend-mode:overlay;
+  background:linear-gradient(180deg, rgba(150,110,220,0.10), rgba(20,8,40,0.08) 55%, rgba(0,0,0,0.18) 100%);
+}
+#filmgrain{
+  z-index:22;
+  pointer-events:none;
+  opacity:0.03;
+  mix-blend-mode:overlay;
+  background-image:radial-gradient(circle, #fff 0.5px, transparent 0.5px);
+  background-size:3px 3px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:0.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.001ms !important;
+  }
+}
+
+.love-word{position:absolute;color:#f8f4ff;font-weight:700;font-size:clamp(20px,3vw,34px);text-shadow:0 0 10px #c9b6ff;opacity:0;animation:loveIn .9s ease forwards}
+@keyframes loveIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<div id="sky" class="layer">
+  <div class="nebula n1"></div>
+  <div class="nebula n2"></div>
+  <div class="nebula n3"></div>
+</div>
+
+<div class="moon-wrap">
+  <svg viewBox="0 0 100 100">
+    <defs>
+      <radialGradient id="moonGrad" cx="38%" cy="35%" r="65%">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="55%" stop-color="#f3e9ff"/>
+        <stop offset="100%" stop-color="#d9c4ff"/>
+      </radialGradient>
+      <radialGradient id="moonHaloGrad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#cbb2ff" stop-opacity="0.55"/>
+        <stop offset="60%" stop-color="#9a6fe0" stop-opacity="0.18"/>
+        <stop offset="100%" stop-color="#9a6fe0" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <circle class="moon-halo" cx="50" cy="50" r="48" fill="url(#moonHaloGrad)"/>
+    <circle cx="50" cy="50" r="24" fill="url(#moonGrad)"/>
+    <circle cx="41" cy="42" r="3.2" fill="#e3d3ff" opacity="0.5"/>
+    <circle cx="58" cy="55" r="2" fill="#e3d3ff" opacity="0.4"/>
+    <circle cx="46" cy="60" r="1.4" fill="#e3d3ff" opacity="0.4"/>
+  </svg>
+</div>
+
+<div id="stars" class="layer"></div>
+<div id="shooting-layer" class="layer"></div>
+
+<div class="fog f1"></div>
+<div class="fog f2"></div>
+
+<div id="ground" class="layer"></div>
+<svg id="grass-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+
+<div id="dust" class="layer"></div>
+
+<div id="scene"></div>
+
+
+<div id="loveText" class="layer" style="z-index:15;pointer-events:none">
+<div class="love-word" style="left:20%;bottom:55%;animation-delay:.5s">I</div>
+<div class="love-word" style="left:48%;bottom:62%;animation-delay:1.3s">LOVE</div>
+<div class="love-word" style="left:77%;bottom:55%;animation-delay:2.1s">YOU</div>
+</div>
+<div id="fireflies" class="layer"></div>
+<div id="falling-petals" class="layer"></div>
+
+<div id="vignette" class="layer"></div>
+<div id="grade" class="layer"></div>
+<div id="filmgrain" class="layer"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------------------------------------------------------------
+   Utility helpers
+--------------------------------------------------------------- */
+const rand  = (a,b)=> a + Math.random()*(b-a);
+const randi = (a,b)=> Math.floor(rand(a,b+1));
+const choice= arr => arr[Math.floor(Math.random()*arr.length)];
+const frag  = () => document.createDocumentFragment();
+const NS    = "http://www.w3.org/2000/svg";
+const svgEl = (tag, attrs)=>{
+  const el = document.createElementNS(NS, tag);
+  for(const k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+};
+
+/* ---------------------------------------------------------------
+   STARS
+--------------------------------------------------------------- */
+(function buildStars(){
+  const layer = document.getElementById('stars');
+  const f = frag();
+  const count = window.innerWidth < 640 ? 70 : 180;
+  for(let i=0;i<count;i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = rand(0.6, 2.1);
+    s.style.left = rand(0,100)+'%';
+    s.style.top  = rand(0,72)+'%';
+    s.style.width = s.style.height = size+'px';
+    s.style.setProperty('--min-op', rand(0.08,0.3));
+    s.style.setProperty('--max-op', rand(0.6,1));
+    s.style.animationDuration = rand(1.6,4.5)+'s';
+    s.style.animationDelay = rand(0,4)+'s';
+    if(Math.random() < 0.12){ s.style.background = '#e6d6ff'; }
+    f.appendChild(s);
+  }
+  layer.appendChild(f);
+})();
+
+/* ---------------------------------------------------------------
+   SHOOTING STARS (periodic)
+--------------------------------------------------------------- */
+(function shootingStars(){
+  const layer = document.getElementById('shooting-layer');
+  function spawn(){
+    const el = document.createElement('div');
+    el.className = 'shoot';
+    const startX = rand(10,70);
+    const startY = rand(4,35);
+    const angle = rand(18,32);
+    const dist  = rand(220,380);
+    el.style.left = startX+'%';
+    el.style.top  = startY+'%';
+    const dur = rand(0.9,1.5);
+    el.animate([
+      { transform:`translate(0,0) rotate(${angle}deg)`, opacity:0 },
+      { transform:`translate(${dist*0.15}px, ${dist*0.15*Math.tan(angle*Math.PI/180)}px) rotate(${angle}deg)`, opacity:1, offset:0.12 },
+      { transform:`translate(${dist}px, ${dist*Math.tan(angle*Math.PI/180)}px) rotate(${angle}deg)`, opacity:0 }
+    ], { duration: dur*1000, easing:'ease-in' });
+    layer.appendChild(el);
+    setTimeout(()=> el.remove(), dur*1000+50);
+    setTimeout(spawn, rand(3500, 9000));
+  }
+  setTimeout(spawn, rand(1500,4000));
+})();
+
+/* ---------------------------------------------------------------
+   GRASS FIELD
+--------------------------------------------------------------- */
+(function buildGrass(){
+  const svg = document.getElementById('grass-svg');
+  const w = window.innerWidth;
+  svg.setAttribute('viewBox', `0 0 ${w} 160`);
+  svg.setAttribute('preserveAspectRatio','none');
+  const greens = ['#1c6b3e','#2c9d5c','#3fae6e','#4fc27e','#237a4a'];
+  const count = window.innerWidth < 640 ? 80 : 180;
+  const f = frag();
+  for(let i=0;i<count;i++){
+    const x = rand(0, w);
+    const h = rand(18, 62);
+    const baseW = rand(2.5,5);
+    const lean = rand(-14,14);
+    const color = choice(greens);
+    const ctrlX = x + lean*0.6;
+    const tipX  = x + lean;
+    const d = `M${x-baseW/2},160 Q${ctrlX},${160-h*0.55} ${tipX},${160-h}`;
+    const blade = svgEl('path', {
+      d, stroke: color, 'stroke-width': baseW*0.55, fill:'none',
+      'stroke-linecap':'round', class:'blade'
+    });
+    blade.style.setProperty('--rot-a', rand(-4,-1)+'deg');
+    blade.style.setProperty('--rot-b', rand(1,4)+'deg');
+    blade.style.animationDuration = rand(2.4,4.2)+'s';
+    blade.style.animationDelay = rand(0,3)+'s';
+    blade.style.opacity = rand(0.55,0.95);
+    f.appendChild(blade);
+  }
+  svg.appendChild(f);
+})();
+
+/* ---------------------------------------------------------------
+   FLOWERS  (SVG, staged organic bloom)
+--------------------------------------------------------------- */
+const FLOWER_PALETTES = [
+  { p1:'#ffffff', p2:'#e7cbff', p3:'#9a5fe0', c1:'#ffe9b0', c2:'#c98fef' }, // lavender-violet
+  { p1:'#ffffff', p2:'#f0b6ee', p3:'#b25fd1', c1:'#ffe1a8', c2:'#e08fe6' }, // pink-purple
+  { p1:'#ffffff', p2:'#d8c3ff', p3:'#7c4fd6', c1:'#ffe9b0', c2:'#b58af2' }, // light violet
+];
+
+function buildFlower(cfg){
+  const { id, x, scale, petalCount, palette, delay, height } = cfg;
+  const W = 220, H = height;
+  const baseY = H, jointY = H*0.56, topY = H*0.16;
+
+  const svg = svgEl('svg', {
+    class:'flower-svg', viewBox:`0 0 ${W} ${H}`,
+    width: (W*scale)+'px', height:(H*scale)+'px',
+    style:`left:${x}%; transform:translateX(-50%);`
+  });
+
+  const defs = svgEl('defs', {});
+  defs.innerHTML = `
+    <linearGradient id="stemGrad${id}" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#1d6a3e"/>
+      <stop offset="100%" stop-color="#4fc27e"/>
+    </linearGradient>
+    <radialGradient id="petalGrad${id}" cx="50%" cy="15%" r="90%">
+      <stop offset="0%" stop-color="${palette.p1}"/>
+      <stop offset="45%" stop-color="${palette.p2}"/>
+      <stop offset="100%" stop-color="${palette.p3}"/>
+    </radialGradient>
+    <radialGradient id="centerGrad${id}" cx="40%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="${palette.c1}"/>
+      <stop offset="100%" stop-color="${palette.c2}"/>
+    </radialGradient>
+    <radialGradient id="glowGrad${id}" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="${palette.p2}" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="${palette.p2}" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="leafGrad${id}" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4fc27e"/>
+      <stop offset="100%" stop-color="#1d6a3e"/>
+    </linearGradient>
+    <filter id="softBlur${id}" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3.2"/>
+    </filter>
+  `;
+  svg.appendChild(defs);
+
+  /* ---- lower stem (fixed base) ---- */
+  const lowerGroup = svgEl('g', { class:'stem-lower' });
+  const lowerCurve = rand(-10,10);
+  const lowerD = `M${W/2},${baseY} C ${W/2+lowerCurve*0.4},${baseY-(baseY-jointY)*0.5} ${W/2+lowerCurve*0.7},${jointY+(baseY-jointY)*0.2} ${W/2},${jointY}`;
+  const lowerStem = svgEl('path', {
+    d: lowerD, fill:'none', stroke:`url(#stemGrad${id})`, 'stroke-width':7,
+    'stroke-linecap':'round', 'pathLength':'1', class:'stem-draw'
+  });
+  lowerStem.style.animationDelay = delay+'s';
+  lowerGroup.appendChild(lowerStem);
+
+  /* lower leaf */
+  const leafLower = makeLeaf(id, W/2 - 2, jointY + (baseY-jointY)*0.42, -34, 1.05, palette);
+  lowerGroup.appendChild(leafLower);
+
+  svg.appendChild(lowerGroup);
+
+  /* ---- upper stem (sways in wind) ---- */
+  const upperGroup = svgEl('g', { class:'stem-upper' });
+  upperGroup.style.transformOrigin = `${W/2}px ${jointY}px`;
+  upperGroup.style.animationDuration = rand(4.2,6.2)+'s';
+  upperGroup.style.animationDelay = rand(0,2)+'s';
+
+  const upperCurve = rand(-16,16);
+  const upperD = `M${W/2},${jointY} C ${W/2+upperCurve*0.5},${jointY-(jointY-topY)*0.4} ${W/2+upperCurve},${topY+(jointY-topY)*0.25} ${W/2},${topY}`;
+  const upperStem = svgEl('path', {
+    d: upperD, fill:'none', stroke:`url(#stemGrad${id})`, 'stroke-width':6,
+    'stroke-linecap':'round', 'pathLength':'1', class:'stem-draw'
+  });
+  upperStem.style.animationDelay = (delay+0.5)+'s';
+  upperGroup.appendChild(upperStem);
+
+  const leafUpperA = makeLeaf(id, W/2 + 4, jointY - (jointY-topY)*0.25, 38, 0.9, palette, true);
+  upperGroup.appendChild(leafUpperA);
+
+  const leafUpperB = makeLeaf(id, W/2 - 3, jointY - (jointY-topY)*0.6, -30, 0.8, palette);
+  upperGroup.appendChild(leafUpperB);
+
+  /* ---- flower head ----
+     outer group: static placement atop the stem (SVG attribute transform)
+     inner group: CSS sway animation only, so the placement isn't clobbered */
+  const headPosition = svgEl('g', { transform:`translate(${W/2},${topY})` });
+  const headGroup = svgEl('g', { class:'flower-head' });
+  headGroup.style.animationDelay = rand(0,2)+'s';
+  headGroup.style.animationDuration = rand(4.6,6.4)+'s';
+  headPosition.appendChild(headGroup);
+
+  /* glow behind bloom */
+  const glow = svgEl('circle', {
+    class:'bloom-glow', r:46, fill:`url(#glowGrad${id})`
+  });
+  headGroup.appendChild(glow);
+
+  /* bud (closed) */
+  const bud = svgEl('ellipse', {
+    class:'bud', cx:0, cy:0, rx:9, ry:16,
+    fill:`url(#petalGrad${id})`, stroke:palette.p3, 'stroke-width':0.6
+  });
+  bud.style.animationDelay = (delay+0.9)+'s';
+  headGroup.appendChild(bud);
+
+  /* petals group */
+  const petalsGroup = svgEl('g', { class:'petals' });
+  const bloomStart = delay + 1.35;
+  for(let i=0;i<petalCount;i++){
+    const angle = (360/petalCount)*i;
+    const wobble = rand(-3,3);
+    const pg = svgEl('g', { transform:`rotate(${angle+wobble})` });
+    const len = rand(40,50);
+    const wid = rand(11,16);
+    const pd = `M0,0 C ${-wid},${-len*0.32} ${-wid*0.9},${-len*0.72} 0,${-len} C ${wid*0.9},${-len*0.72} ${wid},${-len*0.32} 0,0 Z`;
+    const petal = svgEl('path', {
+      d: pd, fill:`url(#petalGrad${id})`, class:'petal',
+      opacity:0.94, stroke:palette.p3, 'stroke-width':0.3, 'stroke-opacity':0.4
+    });
+    petal.style.animationDuration = rand(0.85,1.15)+'s';
+    pg.appendChild(petal);
+    petalsGroup.appendChild(pg);
+  }
+  headGroup.appendChild(petalsGroup);
+
+  /* center detail */
+  const centerGroup = svgEl('g', { class:'center-detail' });
+  centerGroup.style.animationDelay = (bloomStart + petalCount*0.075 + 0.4)+'s';
+  const centerBase = svgEl('circle', { r:11, fill:`url(#centerGrad${id})` });
+  centerGroup.appendChild(centerBase);
+  const stamenCount = 8;
+  for(let i=0;i<stamenCount;i++){
+    const a = (360/stamenCount)*i * (Math.PI/180);
+    const rr = 6.5;
+    const dot = svgEl('circle', {
+      cx: Math.cos(a)*rr, cy: Math.sin(a)*rr, r:1.1, fill:'#fff8e6', opacity:0.85
+    });
+    centerGroup.appendChild(dot);
+  }
+  headGroup.appendChild(centerGroup);
+
+  upperGroup.appendChild(headPosition);
+  svg.appendChild(upperGroup);
+
+  /* activate staged classes via timers (drives paused animations) */
+  const t1 = (delay+0.9)*1000;
+  const t2 = (delay+1.1)*1000;
+  const t3 = (bloomStart)*1000;
+  const t4 = (bloomStart + petalCount*0.075 + 0.35)*1000;
+  const t5 = (bloomStart + petalCount*0.075 + 0.6)*1000;
+
+  setTimeout(()=>{ bud.classList.add('go'); }, t1);
+  setTimeout(()=>{ leafLower.grownTarget.classList.add('grown'); }, t2);
+  setTimeout(()=>{ leafUpperA.grownTarget.classList.add('grown'); }, t2 + 180);
+  setTimeout(()=>{ leafUpperB.grownTarget.classList.add('grown'); }, t2 + 340);
+  setTimeout(()=>{
+    bud.classList.add('fadeaway');
+    petalsGroup.querySelectorAll('.petal').forEach((p,i)=>{
+      setTimeout(()=> p.classList.add('go'), i*75);
+    });
+  }, t3);
+  setTimeout(()=>{ centerGroup.classList.add('go'); }, t4);
+  setTimeout(()=>{ glow.classList.add('go'); }, t5);
+
+  return svg;
+}
+
+function makeLeaf(id, x, y, angle, scale, palette, flip){
+  // outer group: static placement only (SVG attribute transform)
+  const outer = svgEl('g', {
+    transform: `translate(${x},${y}) rotate(${angle}) scale(${flip?-scale:scale},${scale})`
+  });
+  // inner element: CSS-driven sprout + sway animation (its own transform, no attribute conflict)
+  const d = 'M0,0 C 10,-4 22,-2 30,6 C 22,10 10,10 0,0 Z';
+  const path = svgEl('path', { d, fill:`url(#leafGrad${id})`, opacity:0.92, class:'leaf' });
+  path.style.animationDuration = '0.9s, ' + rand(3,4.2)+'s';
+  outer.appendChild(path);
+  outer.grownTarget = path; // reference so caller can toggle the 'grown' class on the right element
+  return outer;
+}
+
+(function buildFlowers(){
+  const scene = document.getElementById('scene');
+  const f = frag();
+  const positions = [
+    { x:20, scale:1.0, delay:0.3 },
+    { x:50, scale:1.18, delay:1.1 },
+    { x:79, scale:0.95, delay:1.9 },
+  ];
+  positions.forEach((pos, idx)=>{
+    const flower = buildFlower({
+      id: idx,
+      x: pos.x,
+      scale: pos.scale,
+      petalCount: randi(14,18),
+      palette: FLOWER_PALETTES[idx % FLOWER_PALETTES.length],
+      delay: pos.delay,
+      height: randi(360,420)
+    });
+    f.appendChild(flower);
+  });
+  scene.appendChild(f);
+})();
+
+/* ---------------------------------------------------------------
+   FIREFLIES
+--------------------------------------------------------------- */
+(function buildFireflies(){
+  const layer = document.getElementById('fireflies');
+  const f = frag();
+  const count = window.innerWidth < 640 ? 10 : 24;
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'firefly';
+    el.style.left = rand(2,98)+'%';
+    el.style.top  = rand(35,92)+'%';
+    const amp = rand(20,70);
+    el.style.setProperty('--x1', rand(-amp,amp)+'px');
+    el.style.setProperty('--y1', rand(-amp,amp)+'px');
+    el.style.setProperty('--x2', rand(-amp,amp)+'px');
+    el.style.setProperty('--y2', rand(-amp,amp)+'px');
+    el.style.setProperty('--x3', rand(-amp,amp)+'px');
+    el.style.setProperty('--y3', rand(-amp,amp)+'px');
+    const flyDur = rand(9,18);
+    const glowDur = rand(2.5,5);
+    el.style.animationDuration = `${flyDur}s, ${glowDur}s`;
+    el.style.animationDelay = `${rand(0,6)}s, ${rand(0,4)}s`;
+    const s = rand(3.5,6.5);
+    el.style.width = el.style.height = s+'px';
+    f.appendChild(el);
+  }
+  layer.appendChild(f);
+})();
+
+/* ---------------------------------------------------------------
+   FALLING PETALS
+--------------------------------------------------------------- */
+(function buildFallingPetals(){
+  const layer = document.getElementById('falling-petals');
+  const f = frag();
+  const colors = ['#e7cbff','#f0b6ee','#d8c3ff','#c9a6ff'];
+  const count = window.innerWidth < 640 ? 6 : 16;
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'fpetal';
+    const size = rand(7,15);
+    el.style.width = size+'px';
+    el.style.height = (size*1.4)+'px';
+    el.style.left = rand(0,100)+'%';
+    el.style.background = choice(colors);
+    el.style.opacity = rand(0.35,0.85);
+    el.style.setProperty('--drift', rand(-120,120)+'px');
+    const fallDur = rand(11,22);
+    const spinDur = rand(2.5,5.5);
+    el.style.animationDuration = `${fallDur}s, ${spinDur}s`;
+    el.style.animationDelay = `${-rand(0,fallDur)}s, ${-rand(0,spinDur)}s`;
+    f.appendChild(el);
+  }
+  layer.appendChild(f);
+})();
+
+/* ---------------------------------------------------------------
+   DUST / SPARKLES
+--------------------------------------------------------------- */
+(function buildDust(){
+  const layer = document.getElementById('dust');
+  const f = frag();
+  const count = window.innerWidth < 640 ? 8 : 18;
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'mote';
+    const size = rand(1.5,4);
+    el.style.width = el.style.height = size+'px';
+    el.style.left = rand(0,100)+'%';
+    el.style.top = rand(10,95)+'%';
+    el.style.setProperty('--mx', rand(-30,30)+'px');
+    el.style.setProperty('--my', rand(-40,-10)+'px');
+    el.style.animationDuration = `${rand(10,20)}s, ${rand(3,6)}s`;
+    el.style.animationDelay = `${rand(0,10)}s, ${rand(0,4)}s`;
+    f.appendChild(el);
+  }
+  layer.appendChild(f);
+})();
+
+})();
+</script>
+</body>
+</html>
